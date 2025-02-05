@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../models/news_item.dart';
 
 class ReelsFeedScreen extends StatefulWidget {
   const ReelsFeedScreen({super.key});
@@ -11,6 +14,72 @@ class ReelsFeedScreen extends StatefulWidget {
 class _ReelsFeedScreenState extends State<ReelsFeedScreen> {
   final PageController _pageController = PageController();
   bool _isLoading = true;
+
+  final List<NewsItem> newsItems = [
+    NewsItem(
+      title: "SpaceX Successfully Launches Starship",
+      description: "SpaceX achieves major milestone with successful Starship test flight...",
+      imageUrl: "https://picsum.photos/800/800?random=1",
+      source: "Space News",
+      sourceUrl: "https://www.space.com/news",
+    ),
+    NewsItem(
+      title: "AI Breakthrough in Medical Research",
+      description: "New AI model shows promising results in early disease detection...",
+      imageUrl: "https://picsum.photos/800/800?random=2",
+      source: "Tech Daily",
+      sourceUrl: "https://www.techdaily.com/news",
+    ),
+    // Add more news items as needed
+  ];
+
+  Future<void> _navigateToSource(BuildContext context, String sourceUrl) async {
+    try {
+      final Uri url = Uri.parse(sourceUrl);
+      if (context.mounted) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => SafeArea(
+              child: Scaffold(
+                appBar: AppBar(
+                  title: const Text('News Source'),
+                  leading: IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+                body: WebViewWidget(
+                  controller: WebViewController()
+                    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                    ..setBackgroundColor(const Color(0x00000000))
+                    ..setNavigationDelegate(
+                      NavigationDelegate(
+                        onNavigationRequest: (NavigationRequest request) {
+                          return NavigationDecision.navigate;
+                        },
+                        onWebResourceError: (WebResourceError error) {
+                          debugPrint('WebView error: ${error.description}');
+                        },
+                      ),
+                    )
+                    ..loadRequest(url),
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error opening WebView: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not load the page: $e'),
+          ),
+        );
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -24,136 +93,139 @@ class _ReelsFeedScreenState extends State<ReelsFeedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: PageView.builder(
         controller: _pageController,
         scrollDirection: Axis.vertical,
-        itemCount: 10,
+        itemCount: newsItems.length,
         itemBuilder: (context, index) {
-          return Stack(
-            children: [
-              // Background Video or Image (Mocking as Image)
-              Positioned.fill(
-                child: CachedNetworkImage(
-                  imageUrl: 'https://picsum.photos/600/1200?random=${index + 1}',
-                  fit: BoxFit.cover,
-                ),
-              ),
-
-              // Top progress indicator (Instagram Style)
-              Positioned(
-                top: 40,
-                left: 16,
-                right: 16,
-                child: Row(
-                  children: List.generate(
-                    10,
-                    (i) => Expanded(
-                      child: Container(
-                        height: 3,
-                        margin: const EdgeInsets.symmetric(horizontal: 2),
-                        decoration: BoxDecoration(
-                          color: i <= index ? Colors.white : Colors.white.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                    ),
+          final newsItem = newsItems[index];
+          return GestureDetector(
+            onTap: () => _navigateToSource(context, newsItem.sourceUrl),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: isDark ? Colors.black12 : Colors.black.withOpacity(0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, 4),
                   ),
-                ),
+                ],
               ),
-
-              // Right-side action buttons
-              Positioned(
-                right: 12,
-                bottom: 100,
-                child: Column(
-                  children: [
-                    _buildActionButton(Icons.favorite_border, '24.5K'),
-                    const SizedBox(height: 10),
-                    _buildActionButton(Icons.chat_bubble_outline, '1.2K'),
-                    const SizedBox(height: 10),
-                    _buildActionButton(Icons.send, 'Share'),
-                    const SizedBox(height: 10),
-                    _buildActionButton(Icons.more_horiz, ''),
-                  ],
-                ),
-              ),
-
-              // User profile and text at the bottom
-              Positioned(
-                left: 16,
-                bottom: 48,
-                right: 16,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Breaking News Headline $index',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Swipe up for more news updates',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 16,
-                          backgroundImage: CachedNetworkImageProvider(
-                            'https://picsum.photos/200?random=${index + 1}',
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
+                    children: [
+                      Hero(
+                        tag: 'news_$index',
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(24),
+                          child: CachedNetworkImage(
+                            imageUrl: newsItem.imageUrl,
+                            height: 300,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: isDark ? Colors.grey[850] : Colors.grey[200],
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'News Channel',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                isDark ? Colors.black.withOpacity(0.9) : Colors.black.withOpacity(0.7),
+                              ],
+                              stops: const [0.2, 1.0],
+                            ),
                           ),
+                          padding: const EdgeInsets.all(20),
+                          child: Text(
+                            newsItem.title,
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          newsItem.description,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            height: 1.6,
+                            letterSpacing: 0.2,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: isDark 
+                                  ? Colors.grey[800]?.withOpacity(0.8) 
+                                  : Colors.grey[200]?.withOpacity(0.8),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Text(
+                                newsItem.source,
+                                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                            const Spacer(),
+                            IconButton(
+                              icon: const Icon(Icons.bookmark_outline_rounded),
+                              onPressed: () {},
+                              color: Theme.of(context).iconTheme.color,
+                              iconSize: 24,
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.share_rounded),
+                              onPressed: () {},
+                              color: Theme.of(context).iconTheme.color,
+                              iconSize: 24,
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Music: Trending News Theme',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           );
         },
       ),
-    );
-  }
-
-  Widget _buildActionButton(IconData icon, String label) {
-    return Column(
-      children: [
-        IconButton(
-          icon: Icon(icon, color: Colors.white),
-          onPressed: () {},
-        ),
-        Text(
-          label,
-          style: const TextStyle(color: Colors.white, fontSize: 12),
-        ),
-      ],
     );
   }
 }

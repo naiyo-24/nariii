@@ -43,6 +43,8 @@ dependencies:
   get_storage: ^2.1.1
   cached_network_image: ^3.4.1
   like_button: ^2.0.5
+  webview_flutter: ^4.4.2  # Update to latest version
+  url_launcher: ^6.2.4     # Add this for fallback
 
 dev_dependencies:
   flutter_test:

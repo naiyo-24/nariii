@@ -67,8 +67,8 @@ class _HomeScreenState extends State<HomeScreen> {
         child: DotCurvedBottomNav(
           scrollController: _scrollController,
           hideOnScroll: true,
-          indicatorColor: Theme.of(context).colorScheme.primary,
-          backgroundColor: Theme.of(context).cardColor,
+          indicatorColor: Colors.lightBlueAccent ,
+          backgroundColor: Colors.blueGrey,
           animationDuration: const Duration(milliseconds: 300),
           animationCurve: Curves.ease,
           selectedIndex: _currentPage,
@@ -86,29 +86,29 @@ class _HomeScreenState extends State<HomeScreen> {
             Icon(
               Icons.home_rounded,
               color: _currentPage == 0 
-                ? Theme.of(context).colorScheme.primary 
-                : Theme.of(context).textTheme.bodyMedium?.color,
+                ? Colors.lightBlueAccent 
+                : Colors.white,
               size: 28,
             ),
             Icon(
               Icons.explore_rounded,
               color: _currentPage == 1 
-                ? Theme.of(context).colorScheme.primary 
-                : Theme.of(context).textTheme.bodyMedium?.color,
+                ? Colors.lightBlueAccent 
+                : Colors.white,
               size: 28,
             ),
             Icon(
               Icons.chat_bubble_rounded,
               color: _currentPage == 2 
-                ? Theme.of(context).colorScheme.primary 
-                : Theme.of(context).textTheme.bodyMedium?.color,
+                ? Colors.lightBlueAccent 
+                : Colors.white,
               size: 28,
             ),
             Icon(
               Icons.call_rounded,
               color: _currentPage == 3 
-                ? Theme.of(context).colorScheme.primary 
-                : Theme.of(context).textTheme.bodyMedium?.color,
+                ? Colors.lightBlueAccent 
+                : Colors.white,
               size: 28,
             ),
           ],
@@ -132,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Theme.of(context).scaffoldBackgroundColor,
                   Theme.of(context).scaffoldBackgroundColor.withOpacity(0.95),
                 ]
-              : [Colors.white, Colors.grey.shade50],
+              : [Colors.white, Colors.white],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -155,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 BoxShadow(
                   color: isDarkMode 
                     ? Colors.black.withOpacity(0.2)
-                    : Colors.grey.withOpacity(0.2),
+                    : Colors.white,
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
