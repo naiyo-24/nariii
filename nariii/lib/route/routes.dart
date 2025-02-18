@@ -3,5 +3,6 @@ class Routes {
   static const String getstarted = '/getstarted';
   static const String chatscreen = '/chatscreen';
   static const String profile = '/profile';
+  static const String videocall = '/videocall';
   static const String home = 'home';
 }

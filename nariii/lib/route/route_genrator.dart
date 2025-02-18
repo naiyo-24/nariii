@@ -5,6 +5,7 @@ import 'package:nariii/pages/getstartedscreen.dart';
 import 'package:nariii/pages/homescreen.dart';
 import 'package:nariii/pages/loginscreen.dart';
 import 'package:nariii/pages/profilescreen.dart';
+import 'package:nariii/pages/videocall_screen.dart';
 import 'package:nariii/route/routes.dart';
 
 class RouteGenerator {
@@ -24,6 +25,9 @@ class RouteGenerator {
       case Routes.profile:
         widgetScreen =  ProfileScreen();
         break;
+      case Routes.videocall:
+        widgetScreen = const VideoCallScreen();
+        break;  
       case Routes.chatscreen:
         widgetScreen = ChatScreen(userName: '', userImage: '', isOnline: false);
         break;    

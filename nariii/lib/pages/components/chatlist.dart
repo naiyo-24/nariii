@@ -100,7 +100,10 @@ class _ChatListState extends State<ChatList> {
         decoration: InputDecoration(
           hintText: _selectedSegment == 0 ? 'Search chats...' : 'Search communities...',
           prefixIcon: Icon(Icons.search, color: Colors.grey.shade600),
-          border: InputBorder.none,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
       ),

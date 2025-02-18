@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:nariii/route/routes.dart';
 
 class ChatScreen extends StatefulWidget {
   final String userName;
@@ -106,10 +108,12 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.video_call_rounded, 
+            icon: Icon(Icons.videocam, 
               color: Theme.of(context).textTheme.bodyLarge?.color),
             iconSize: 26,
-            onPressed: () {},
+            onPressed: () {
+              Get.toNamed(Routes.videocall);
+            },
           ),
           IconButton(
             icon: const Icon(Icons.call_rounded, color: Color(0xFF475569)),
